@@ -7,88 +7,82 @@ public class Palindrome_Result {
 
         String input = "A man a plan a canal Panama";
 
-        // Choose strategy at runtime
-        PalindromeStrategy strategy = new DequeStrategy();
-        // To switch:
-        // PalindromeStrategy strategy = new StackStrategy();
+        // Normalize once to keep comparison fair
+        String normalized = input.replaceAll("[^a-zA-Z0-9]", "")
+                .toLowerCase();
 
-        PalindromeService service = new PalindromeService(strategy);
+        // Run and measure Stack Strategy
+        long startStack = System.nanoTime();
+        boolean stackResult = stackCheck(normalized);
+        long endStack = System.nanoTime();
 
-        boolean result = service.execute(input);
+        // Run and measure Deque Strategy
+        long startDeque = System.nanoTime();
+        boolean dequeResult = dequeCheck(normalized);
+        long endDeque = System.nanoTime();
 
-        System.out.println(result ? "Palindrome" : "Not a Palindrome");
+        // Run and measure Two-Pointer Strategy
+        long startTwoPointer = System.nanoTime();
+        boolean twoPointerResult = twoPointerCheck(normalized);
+        long endTwoPointer = System.nanoTime();
+
+        System.out.println("Stack Result: " + stackResult +
+                " | Time: " + (endStack - startStack) + " ns");
+
+        System.out.println("Deque Result: " + dequeResult +
+                " | Time: " + (endDeque - startDeque) + " ns");
+
+        System.out.println("Two Pointer Result: " + twoPointerResult +
+                " | Time: " + (endTwoPointer - startTwoPointer) + " ns");
     }
 
-    // Strategy Interface
-    interface PalindromeStrategy {
-        boolean checkPalindrome(String input);
+    // Stack-Based
+    public static boolean stackCheck(String input) {
+        Deque<Character> stack = new ArrayDeque<>();
+
+        for (char ch : input.toCharArray()) {
+            stack.push(ch);
+        }
+
+        for (char ch : input.toCharArray()) {
+            if (ch != stack.pop()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
-    // Stack Strategy
-    static class StackStrategy implements PalindromeStrategy {
+    // Deque-Based
+    public static boolean dequeCheck(String input) {
+        Deque<Character> deque = new ArrayDeque<>();
 
-        @Override
-        public boolean checkPalindrome(String input) {
-
-            if (input == null) return false;
-
-            String normalized = input.replaceAll("[^a-zA-Z0-9]", "")
-                    .toLowerCase();
-
-            Deque<Character> stack = new ArrayDeque<>();
-
-            for (char ch : normalized.toCharArray()) {
-                stack.push(ch);
-            }
-
-            for (char ch : normalized.toCharArray()) {
-                if (ch != stack.pop()) {
-                    return false;
-                }
-            }
-
-            return true;
+        for (char ch : input.toCharArray()) {
+            deque.addLast(ch);
         }
+
+        while (deque.size() > 1) {
+            if (!deque.removeFirst().equals(deque.removeLast())) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
-    // Deque Strategy
-    static class DequeStrategy implements PalindromeStrategy {
+    // Two-Pointer (Most Efficient)
+    public static boolean twoPointerCheck(String input) {
+        int start = 0;
+        int end = input.length() - 1;
 
-        @Override
-        public boolean checkPalindrome(String input) {
-
-            if (input == null) return false;
-
-            String normalized = input.replaceAll("[^a-zA-Z0-9]", "")
-                    .toLowerCase();
-
-            Deque<Character> deque = new ArrayDeque<>();
-
-            for (char ch : normalized.toCharArray()) {
-                deque.addLast(ch);
+        while (start < end) {
+            if (input.charAt(start) != input.charAt(end)) {
+                return false;
             }
-
-            while (deque.size() > 1) {
-                if (!deque.removeFirst().equals(deque.removeLast())) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-    }
-
-    // Context Class
-    static class PalindromeService {
-
-        private PalindromeStrategy strategy;
-
-        public PalindromeService(PalindromeStrategy strategy) {
-            this.strategy = strategy;
+            start++;
+            end--;
         }
 
-        public boolean execute(String input) {
-            return strategy.checkPalindrome(input);
-        }
+        return true;
     }
 }
