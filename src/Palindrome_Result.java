@@ -1,31 +1,94 @@
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-public class PalindromeChecker {
+public class Palindrome_Result {
 
-    // Public method exposed to outside world
-    public boolean checkPalindrome(String input) {
+    public static void main(String[] args) {
 
-        if (input == null) {
-            return false;
-        }
+        String input = "A man a plan a canal Panama";
 
-        // Normalize (ignore case & spaces)
-        String normalized = input.replaceAll("[^a-zA-Z0-9]", "")
-                .toLowerCase();
+        // Choose strategy at runtime
+        PalindromeStrategy strategy = new DequeStrategy();
+        // To switch:
+        // PalindromeStrategy strategy = new StackStrategy();
 
-        Deque<Character> deque = new ArrayDeque<>();
+        PalindromeService service = new PalindromeService(strategy);
 
-        for (char ch : normalized.toCharArray()) {
-            deque.addLast(ch);
-        }
+        boolean result = service.execute(input);
 
-        while (deque.size() > 1) {
-            if (!deque.removeFirst().equals(deque.removeLast())) {
-                return false;
+        System.out.println(result ? "Palindrome" : "Not a Palindrome");
+    }
+
+    // Strategy Interface
+    interface PalindromeStrategy {
+        boolean checkPalindrome(String input);
+    }
+
+    // Stack Strategy
+    static class StackStrategy implements PalindromeStrategy {
+
+        @Override
+        public boolean checkPalindrome(String input) {
+
+            if (input == null) return false;
+
+            String normalized = input.replaceAll("[^a-zA-Z0-9]", "")
+                    .toLowerCase();
+
+            Deque<Character> stack = new ArrayDeque<>();
+
+            for (char ch : normalized.toCharArray()) {
+                stack.push(ch);
             }
+
+            for (char ch : normalized.toCharArray()) {
+                if (ch != stack.pop()) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
+
+    // Deque Strategy
+    static class DequeStrategy implements PalindromeStrategy {
+
+        @Override
+        public boolean checkPalindrome(String input) {
+
+            if (input == null) return false;
+
+            String normalized = input.replaceAll("[^a-zA-Z0-9]", "")
+                    .toLowerCase();
+
+            Deque<Character> deque = new ArrayDeque<>();
+
+            for (char ch : normalized.toCharArray()) {
+                deque.addLast(ch);
+            }
+
+            while (deque.size() > 1) {
+                if (!deque.removeFirst().equals(deque.removeLast())) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
+
+    // Context Class
+    static class PalindromeService {
+
+        private PalindromeStrategy strategy;
+
+        public PalindromeService(PalindromeStrategy strategy) {
+            this.strategy = strategy;
         }
 
-        return true;
+        public boolean execute(String input) {
+            return strategy.checkPalindrome(input);
+        }
     }
 }
