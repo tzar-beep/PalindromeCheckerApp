@@ -1,26 +1,29 @@
-public class Palindrome_Result {
+import java.util.ArrayDeque;
+import java.util.Deque;
 
-    public static void main(String[] args) {
-        String input = "A man a plan a canal Panama";
+public class PalindromeChecker {
 
-        System.out.println(isPalindrome(input) ?
-                "Palindrome" : "Not a Palindrome");
-    }
+    // Public method exposed to outside world
+    public boolean checkPalindrome(String input) {
 
-    public static boolean isPalindrome(String input) {
+        if (input == null) {
+            return false;
+        }
 
-        // Normalize string: remove spaces and convert to lowercase
-        String normalized = input.replaceAll("\\s+", "").toLowerCase();
+        // Normalize (ignore case & spaces)
+        String normalized = input.replaceAll("[^a-zA-Z0-9]", "")
+                .toLowerCase();
 
-        int start = 0;
-        int end = normalized.length() - 1;
+        Deque<Character> deque = new ArrayDeque<>();
 
-        while (start < end) {
-            if (normalized.charAt(start) != normalized.charAt(end)) {
+        for (char ch : normalized.toCharArray()) {
+            deque.addLast(ch);
+        }
+
+        while (deque.size() > 1) {
+            if (!deque.removeFirst().equals(deque.removeLast())) {
                 return false;
             }
-            start++;
-            end--;
         }
 
         return true;
