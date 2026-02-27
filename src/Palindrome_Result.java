@@ -1,27 +1,29 @@
 public class Palindrome_Result {
 
     public static void main(String[] args) {
-        String input = "madam";
+        public static void main(String[] args) {
+            String input = "madam";
+            Stack<Character> stack = new Stack<>();
 
-        char[] characters = input.toCharArray();
-        boolean isPalindrome = true;
-
-        int start = 0;
-        int end = characters.length - 1;
-
-        while (start < end) {
-            if (characters[start] != characters[end]) {
-                isPalindrome = false;
-                break;
+            // Push all characters into stack
+            for (int i = 0; i < input.length(); i++) {
+                stack.push(input.charAt(i));
             }
-            start++;
-            end--;
-        }
 
-        if (isPalindrome) {
-            System.out.println("Palindrome");
-        } else {
-            System.out.println("Not a Palindrome");
+            boolean isPalindrome = true;
+
+            // Pop and compare
+            for (int i = 0; i < input.length(); i++) {
+                if (input.charAt(i) != stack.pop()) {
+                    isPalindrome = false;
+                    break;
+                }
+            }
+
+            if (isPalindrome) {
+                System.out.println("Palindrome");
+            } else {
+                System.out.println("Not a Palindrome");
+            }
         }
     }
-}
