@@ -1,15 +1,24 @@
 public class Palindrome_Result {
 
     public static void main(String[] args) {
+        String input = "madam";
 
-        String original = "madam";
-        String reversed = "";
+        char[] characters = input.toCharArray();
+        boolean isPalindrome = true;
 
-        for (int i = original.length() - 1; i >= 0; i--) {
-            reversed = reversed + original.charAt(i);
+        int start = 0;
+        int end = characters.length - 1;
+
+        while (start < end) {
+            if (characters[start] != characters[end]) {
+                isPalindrome = false;
+                break;
+            }
+            start++;
+            end--;
         }
 
-        if (original.equals(reversed)) {
+        if (isPalindrome) {
             System.out.println("Palindrome");
         } else {
             System.out.println("Not a Palindrome");
